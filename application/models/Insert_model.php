@@ -5,7 +5,7 @@ class Insert_model extends CI_Model
 {
     public function post_insert($data)
     {
-        $query = $this->db->insert('posts',$data);
+         $this->db->insert('posts',$data);
         return $this->db->affected_rows();
     }
 }
