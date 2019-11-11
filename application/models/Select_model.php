@@ -9,4 +9,11 @@ class Select_model extends CI_Model
         $result = $this->db->query($sql);
         return $result;
     }
+
+    public function select_post_by_id($id)
+    {
+        $sql = "SELECT * FROM posts WHERE id='".$id."'";
+        $result = $this->db->query($sql);
+        return $result;
+    }
 }

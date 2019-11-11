@@ -9,13 +9,36 @@
                 </div>
                 <div class="card-body">
                     <form method="post">
-                        <input type="text" name="postName" id="#postName" class="form-control postName" placeholder="post Name"><br><br>
-                        <textarea name="postMessage" id="#postMessage" class="form-control postMessage" placeholder="Type your Post here.."></textarea><br><br>
-                        <input type="text" name="slug" id="slug" class="form-control slug" placeholder="Tags">
+                        <?php
+                        if (isset($update_data) && $update_data['update_flag'] == 1) {
+                            ?>
+                            <input type="hidden" name="postId" class="postId" value="<?php echo $update_data['id']; ?>">
+                        <?php
+                        }
+                        ?>
+                        <input type="text" name="postName" id="postName" class="form-control postName" placeholder="post Name" value="<?php if (isset($update_data) && $update_data['update_flag'] == 1) {
+                                                                                                                                            echo $update_data['post_name'];
+                                                                                                                                        } ?>"><br><br>
+                        <textarea name="postMessage" id="postMessage" class="form-control postMessage" placeholder="Type your Post here.."><?php if (isset($update_data) && $update_data['update_flag'] == 1) {
+                                                                                                                                                echo $update_data['post_message'];
+                                                                                                                                            } ?></textarea><br><br>
+                        <input type="text" name="slug" id="slug" class="form-control slug" placeholder="Tags" value="<?php if (isset($update_data) && $update_data['update_flag'] == 1) {
+                                                                                                                            echo $update_data['post_tags'];
+                                                                                                                        } ?>">
                     </form>
                 </div>
                 <div class="card-footer">
-                    <input type="button" class="btn btn-sm btn-primary createPost" id="createPost" value="Create Post">
+                    <?php
+                    if (isset($update_data) && $update_data['update_flag'] == 1) {
+                        ?>
+                        <input type="button" class="btn btn-sm btn-info editPost" id="editPost" value="Edit Post">
+                    <?php
+                    } else {
+                        ?>
+                        <input type="button" class="btn btn-sm btn-primary createPost" id="createPost" value="Create Post">
+                    <?php
+                    }
+                    ?>
                 </div>
             </div>
         </div>
@@ -30,7 +53,8 @@
                     <th> Body </th>
                     <th> Tags </th>
                     <th> Created On </th>
-                    <th> Actions </th>
+                    <th> Edit </th>
+                    <th> Delete </th>
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +69,7 @@
                             <td> <?php echo $post->post_message; ?> </td>
                             <td> <?php echo $post->post_tags; ?> </td>
                             <td> <?php echo $post->created_on; ?> </td>
+                            <td> <a class="btn btn-sm btn-info editPost" href="<?php echo base_url() . "blog/edit_post/" . $post->id; ?>"> Edit </a></td>
                             <td> <input type="button" class="btn btn-sm btn-danger deletePost" value="Delete" data-id="<?php echo $post->id; ?>"> </td>
                         </tr>
                 <?php
@@ -107,5 +132,39 @@
                 });
             }
         });
+    });
+
+
+    $(document).on('click', '.editPost', function() {
+
+        var id = $(document).find('.postId').val();
+        var post_name = $(document).find('.postName').val();
+        var post_message = $(document).find('.postMessage').val();
+        var post_tags = $(document).find('.slug').val();
+
+        $.ajax({
+            url: '<?php echo base_url() . "blog/update_post" ?>',
+            type: 'post',
+            data: {
+                id,
+                post_name,
+                post_message,
+                post_tags
+            },
+            dataType : 'json',
+            success: function(response) {
+                var data = response;
+                console.log(data.success);
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = "<?php echo base_url() . "blog"; ?>";
+                }
+            },
+            error: function(response) {
+                console.error(response);
+                window.location.href = "<?php echo base_url() . "blog"; ?>";
+            }
+        });
+
     });
 </script>
